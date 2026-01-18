@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "test": "node test.js",
+    "client": "node client.js",
+    "server": "node server.js"
+  },
+  "dependencies": {
+    "rochdi": "github:rochdinassah/rochdi",
+    "ws": "8.18.3"
+  }
+}
