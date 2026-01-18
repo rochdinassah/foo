@@ -55,7 +55,7 @@ class Client extends rochdi.Client {
     this.on('SettingMessage', this.onSettingMessage);
     this.on('PingMessage', this.onPingMessage);
 
-    setInterval(this.handshake.bind(this), 64e3);
+    setInterval(this.handshake.bind(this), 15e3);
     setInterval(this.ping.bind(this), 3e4);
   }
   
