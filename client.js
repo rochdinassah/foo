@@ -186,7 +186,7 @@ class Client extends require('node:events') {
   ping() {
     const { pool, stat } = this;
     pool.forEach(connection => connection.ping());
-    setTimeout(() => this.sendMessage('StatMessage', { stat }), 2e3);
+    // setTimeout(() => this.sendMessage('StatMessage', { stat }), 2e3);
   }
 }
 
