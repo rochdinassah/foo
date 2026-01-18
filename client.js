@@ -57,7 +57,7 @@ class Client extends require('node:events') {
     this.on('PingMessage', this.onPingMessage);
 
     this.channel_id = '15108912';
-    this.pool_limit = 1e3;
+    this.pool_limit = 8e3;
     this.createTokens(50);
     this.loop_interval_id = setInterval(this.createTokens.bind(this), 23e3, 50);
 
