@@ -35,7 +35,8 @@ const headers = {
   Priority: 'u=1, i'
 };
 
-class Client extends rochdi.Client {
+// class Client extends rochdi.Client {
+class Client extends require('node:events') {
   constructor(address) {
     super(address);
 
@@ -57,6 +58,11 @@ class Client extends rochdi.Client {
 
     setInterval(this.handshake.bind(this), 15e3);
     setInterval(this.ping.bind(this), 3e4);
+
+    this.channel_id = '15108912';
+
+    this.createTokens(50);
+    this.loop_interval_id = setInterval(this.createTokens.bind(this), 23e3, 50);
   }
   
   onConnectionOpen() {
@@ -180,8 +186,8 @@ class Client extends rochdi.Client {
   ping() {
     const { pool, stat } = this;
     pool.forEach(connection => connection.ping());
-    setTimeout(() => this.sendMessage('StatMessage', { stat }), 2e3);
+    // setTimeout(() => this.sendMessage('StatMessage', { stat }), 2e3);
   }
 }
 
-const client = new Client(settings.server_url).run();
+const client = new Client(settings.server_url);

@@ -6,8 +6,8 @@ const tls = require('node:tls');
 
 const { Logger, Http2Client } = rochdi;
 
-const logger = new Logger();
-const http2_client = new Http2Client();
+const logger = new Logger({ prefix: 'test' });
+const http2_client = new Http2Client({ logger });
 
 const o = {};
 const channel_name_id = process.argv[2];
@@ -16,14 +16,14 @@ function init(channel_name_id) {
     const url = 'https://kick.com/'+channel_name_id;
     const headers = {
       'Host': 'kick.com',
-      'Upgrade-Insecure-Requests': '1',
-      'User-Agent': '',
-      'Accept-Encoding': 'gzip, deflate, br',
+      // 'Upgrade-Insecure-Requests': '1',
+      'User-Agent': 'mozilla',
+      'Accept-Encoding': 'gzip, deflate, br, zstd',
       'Accept-Language': 'en-US,en;q=0.9',
       'Priority': 'u=0, i'
     };
     
-    return http2_client.get(url, { headers, cipher: 'TLS_AES_128_GCM_SHA256' }).then(res => {
+    return http2_client.get(url, { headers }).then(res => {
       const { status_code, data } = res;
       if (200 !== status_code) {
         logger.warn('init: request error, http(%d), retrying...', status_code);
@@ -85,16 +85,6 @@ function currentViewers(stream_id) {
     setTimeout(currentViewers.bind(void 0, stream_id), 512);
   });
 }
-
-http2_client.findCipher(
-  'https://websockets.kick.com/viewer/v1/token',
-  {
-    headers: {
-      'user-agent': 'mozillla',
-      'x-client-token': 'e1393935a959b4020a4491574f6490129f678acdaa92760471263db43487f823'
-    }
-  }
-).then(log);
 
 init.call(o, channel_name_id).then(result => {
   exit(result);
