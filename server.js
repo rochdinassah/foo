@@ -5,7 +5,7 @@
 const rochdi = require('rochdi');
 const settings = require('./settings');
 
-const { Command, Http2Client, Discord, Logger } = rochdi;
+const { CommandManager, Http2Client, Discord, Logger } = rochdi;
 
 const { port } = settings;
 
@@ -33,7 +33,7 @@ class Server extends rochdi.Server {
     const logger = this.logger = new Logger({ prefix: 'app-server' });
 
     this.http2_client = new Http2Client({ logger });
-    this.command = new Command({ logger }).run();
+    this.command_manager = new CommandManager({ logger }).run();
     
     this.on('Attach', this.onAttach);
     this.on('Detach', this.onDetach);
@@ -88,7 +88,7 @@ class Server extends rochdi.Server {
   }
 
   onDiscordMessage(msg) {
-    const { command, discord } = this;
+    const { command_manager, discord } = this;
     const { author, content, channel_id, guild_id } = msg;
 
     if (discord.user.id === author.id)
@@ -99,8 +99,8 @@ class Server extends rochdi.Server {
     if (match) {
       const cmd = match[1].toLowerCase();
       const args = match.slice(2);
-      if (command.eventNames().includes(cmd))
-        discord.api_manager.post('/channels/'+channel_id+'/typing').then(() => command.emit(cmd, ...args));
+      if (command_manager.eventNames().includes(cmd))
+        discord.api_manager.post('/channels/'+channel_id+'/typing').then(() => command_manager.emit(cmd, ...args));
     }
   }
 
@@ -328,7 +328,7 @@ const server = new Server({ port });
 server.run();
 
 server.on('Ready', () => {
-  const { command, discord } = server;
+  const { command_manager, discord } = server;
   const { interaction_manager } = discord;
 
   // interaction start
@@ -336,14 +336,16 @@ server.on('Ready', () => {
     interaction_manager.respondInteraction({
       id: interaction.id,
       token: interaction.token,
-      data: { content: 'pong (kick)' }
+      data: {
+        content: 'pong (kick)'
+      }
     });
   });
-  command.on('ping', server.debug.bind(server));
+  command_manager.on('ping', server.debug.bind(server));
   // interaction end
 
   // command start
-  command.on('init', channel_name_id => {
+  command_manager.on('init', channel_name_id => {
     if (void 0 === channel_name_id)
       return server.notify('command error, usage: init <channel_name_id>', 'error');
     server.init(channel_name_id).then(ok => {
@@ -355,7 +357,7 @@ server.on('Ready', () => {
       );
     });
   });
-  command.on('resize', (type, size) => {
+  command_manager.on('resize', (type, size) => {
     if (!(size = parseInt(size)))
       return server.notify('command error, usage resize <type> <size>');
     switch (type) {
@@ -364,20 +366,20 @@ server.on('Ready', () => {
       default: server.notify(format('command error, "%s" type is unknown', type));
     }
   });
-  command.on('stream_id', stream_id => {
+  command_manager.on('stream_id', stream_id => {
     if (!stream_id)
       return server.notify(format('stream_id: %s', server.stream_id));
     server.stream_id = stream_id;
   });
-  command.on('channel_id', channel_id => {
+  command_manager.on('channel_id', channel_id => {
     if (!channel_id)
       return server.notify(format('channel_id: %s', server.channel_id));
     server.channel_id = channel_id;
   });
-  command.on('viewers', () => {
+  command_manager.on('viewers', () => {
     server.fetchViewerCount().then(count => server.notify(format('viewers: %s', fn(count))));
   });
-  command.on('restart', () => {
+  command_manager.on('restart', () => {
     server.notify('restarting...');
     setTimeout(() => process.exit(1), 1e3);
   });

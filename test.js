@@ -16,7 +16,7 @@ function init(channel_name_id) {
     const url = 'https://kick.com/'+channel_name_id;
     const headers = {
       'Host': 'kick.com',
-      // 'Upgrade-Insecure-Requests': '1',
+      'Upgrade-Insecure-Requests': '1',
       'User-Agent': 'mozilla',
       'Accept-Encoding': 'gzip, deflate, br, zstd',
       'Accept-Language': 'en-US,en;q=0.9',
