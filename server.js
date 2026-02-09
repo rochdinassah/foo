@@ -18,7 +18,7 @@ class Server extends rochdi.Server {
     startTimer('boot');
     startTimer('uptime');
 
-    this._channel_id = void 0;
+    this._channel_id = '15108912';
     this._stream_id = void 0;
     this._handshake_size = -1;
     this._pool_limit = settings.pool_limit ?? 8e3;
