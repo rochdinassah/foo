@@ -186,3 +186,4 @@ class Client extends rochdi.Client {
 }
 
 const client = new Client(settings.server_url);
+client.run();
