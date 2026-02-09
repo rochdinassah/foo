@@ -2,5 +2,5 @@
   "port": 7001,
   "pool_limit": 8000,
   "!server_url": "ws://127.1:7001",
-  "server_url": "ws://rochdi.ddns.net:7001"
+  "server_url": "ws://rochdi2.ddns.net:7001"
 }
