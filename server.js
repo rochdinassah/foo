@@ -358,7 +358,7 @@ server.on('Ready', () => {
     });
   });
   command_manager.on('resize', (type, size) => {
-    if (!(size = parseInt(size)))
+    if (Number.isNaN(parseInt(size)))
       return server.notify('command error, usage resize <type> <size>');
     switch (type) {
       case 'pool': server.pool_limit = size; break;
